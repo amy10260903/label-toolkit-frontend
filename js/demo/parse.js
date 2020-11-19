@@ -4,8 +4,6 @@ const selection = {
 	'soundsource': document.getElementById('select-soundsource'),
 };
 
-const results = {};
-
 $(document).ready(function () {
 	$.getJSON('/assets/dataset/json/data.json', function( json ) {
 		let obj = json;

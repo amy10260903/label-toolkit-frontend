@@ -2,35 +2,38 @@
 <html>
 	<head>
 		<title> Label Toolkit for JPTW Project | AHG</title>
-		<link rel="icon" href="/assets/images/favicon/toolkit.ico"/>
-		<!-- <link rel="shortcut icon" href="/assets/images/icon/toolkit-01.png" type="image/x-icon" /> -->
+		<!--<link rel="icon" href="assets/images/favicon/toolkit.ico"/>-->
+		 <link rel="shortcut icon" href="assets/images/icon/toolkit-01.png" type="image/x-icon" />
 
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajaxpluginss/jquery/2.1.3/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajaxpluginss/axios/0.19.2/axios.min.js"></script>
 
 		<!-- Wave Surfer -->
 		<script src="https://unpkg.com/wavesurfer.js"></script>
 		<script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.spectrogram.min.js"></script>
 
 		<!-- Load YAML -->
-		<script src="/lib/js-yaml/js-yaml.min.js"></script>	
+		<script src="plugins/js-yaml/js-yaml.min.js"></script>
 		
 		<!-- Resize Sensor -->
-		<script src="/lib/css-element-queries/ResizeSensor.js"></script>
-		<script src="/lib/css-element-queries/ElementQueries.js"></script>
+		<script src="plugins/css-element-queries/ResizeSensor.js"></script>
+		<script src="plugins/css-element-queries/ElementQueries.js"></script>
 		
 		<!-- Custom Selectbox -->
-		<script src="/lib/jquery-nice-select-1.1.0/jquery.js"></script> 
-		<script src="/lib/jquery-nice-select-1.1.0/jquery.nice-select.js"></script>
-		<link rel="stylesheet" href="/lib/jquery-nice-select-1.1.0/nice-select.css">
+		<script src="plugins/jquery-nice-select-1.1.0/jquery.js"></script>
+		<script src="plugins/jquery-nice-select-1.1.0/jquery.nice-select.js"></script>
+		<link rel="stylesheet" href="plugins/jquery-nice-select-1.1.0/nice-select.css">
 
 		<!-- Loader.css -->
-		<script src="/lib/loaders.css/loaders.css.js"></script> 
-		<link rel="stylesheet" href="/lib/loaders.css/loaders.min.css">
-		
+		<script src="plugins/loaders.css/loaders.css.js"></script>
+		<link rel="stylesheet" href="plugins/loaders.css/loaders.min.css">
+
+		<!-- Slider -->
+		<script src="plugins/slider.js"></script>
+
 		<!-- Style -->
-		<link rel="stylesheet" href="/css/style.css" />
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		<link rel="stylesheet" href="styles/main.css" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajaxpluginss/font-awesome/4.7.0/css/font-awesome.min.css">
 	</head>
 	<body>
 		<section id="section-title">
@@ -49,12 +52,6 @@
 					        </div>
 				    	</div>
 				        <div style="margin-left: 20px; width: 30%; float:left;">
-							<!-- <div class="label">Search</div>
-					        <div class="custom-select">
-					        	<select id="select-place" onchange="updateResult()">
-					        		<option value="" disabled selected>Target</option>
-					        	</select>
-					        </div> -->
 					        <div class="label">Search</div>
 					        <div class="custom-input" id="custom-upload">
 					        	<input type="file" id="upload-btn" accept="audio/*" />
@@ -63,7 +60,7 @@
 				    	</div>
 				    	<div style="width: auto; float:right;">
 					    	<div class="custom-input" id="custom-submit">
-						        <input type="button" onclick="Recognize()" id="submit"/>
+						        <input type="button" onclick="startAnalysis()" id="submit"/>
 								<label for="submit">Start</label>
 							</div>
 						</div>
@@ -83,11 +80,11 @@
 			<div class="wrapper">
 		        <div id="waveform"></div>
 		        <div id="wave-spectrogram"></div>
-		        <!-- Create action buttons -->
+
+				<!-- Create action buttons -->
 		        <input type="button" id="btn-play" value="Play" disabled="disabled"/>
 		        <input type="button" id="btn-pause" value="Pause" disabled="disabled"/>
 		        <input type="button" id="btn-stop" value="Stop" disabled="disabled" />
-		        <!-- <input type="button" id="btn-add" value="Load"/> -->
 		        <input type="range" id="slider" min="0" max="100" step="1" value="50">
 		        <div id="content-tag"></div>
 		        <div id="content-block"></div>
@@ -100,54 +97,63 @@
 			</div>
 		</section>
     </body>
-    <script type="text/javascript">
-    	$('.loader-inner').loaders();
-    	const upload_btn = document.getElementById('upload-btn');
-    	const upload_label = document.getElementById('upload-label');
-    	upload_btn.addEventListener('change', function(){
-  			upload_label.textContent = this.files[0].name
-		})
+    <script src="js/demo/spectrum.js"></script>
+    <script src="js/demo/event.js"></script>
+	<script src="api/fingerprint.js"></script>
+	<script type="text/javascript">
+		const results = {};
 
-    	function Recognize() {
-    		console.log('>>> submit!');
-    		document.getElementById('section-loader').style.display = 'block';
-    		let mainFormData = new FormData();
-    		let location = document.getElementsByClassName("current")[0].innerHTML;
-    		let file = upload_btn.files[0];
-    		mainFormData.append('file', file);
-    		mainFormData.append('category', location);
-    		axios({
-    			method: 'post',
-    			url: 'http://localhost:8000/api/main/recognize/',
-    			data: mainFormData,
-    			headers: {'Content-Type': 'multipart/form-data' }
-    			})
-    			.then(function (response) {
+		$('.loader-inner').loaders();
+    	$('#upload-btn').change(function() {
+			$('#upload-label')[0].textContent = this.files[0].name;
+		});
+
+    	const Loader = {};
+    	Loader.show = function () {
+    		$('#section-loader')[0].style.display = 'block';
+		}
+		Loader.hide = function() {
+    		$('#section-loader')[0].style.display = 'none';
+			$('#selection-form')[0].style.display = 'none';
+			$('#candidate')[0].style.display = 'block';
+		}
+
+		function startAnalysis() {
+			console.log('startAnalysis');
+			const data = {
+				category: $(".current")[0].innerHTML,
+				file: $("#upload-btn").prop('files')[0],
+			};
+			Loader.show();
+			uploadFile(data)
+				.then(function (response) {
     				console.log(response);
-    				document.getElementById('section-loader').style.display = 'none';
-    				document.getElementById('selection-form').style.display = 'none';
-    				document.getElementById('candidate').style.display = 'block';
-    				parseResult(response);
+    				Loader.hide();
+    				getDetail(response.data.results);
+    				updateSpectrum();
     			})
     			.catch(function (response) {
     				console.log(response);
     			});
-    	}
+		}
 
-    	function parseResult(response) {
-    		let soundsource = document.getElementById('select-soundsource');
-    		let data = response.data.results;
-    		for (i=0; i<data.length; i++) {
-    			let option = document.createElement("option");
-    			option.text = data[i].song_name;
-    			soundsource.add(option);	
-    			results[data[i].song_name] = data[i].offset_seconds;
-    		}
+		function getDetail(data) {
+			data.forEach((object) => {
+				let option = document.createElement("option");
+				option.text = object.song_name;
+				$('#select-soundsource').append(option);
+				results[object.song_name] = object.offset_seconds;
+			})
     		$('select').niceSelect('update');
-    	}
-    </script>
-    <script src="/js/demo/parse.js"></script>
-    <script src="/js/demo/spectrum.js"></script>
-    <script src="/js/demo/event.js"></script>
-    <script src="/js/demo/slider.js"></script>
+		}
+
+		function updateSpectrum() {const key = $('.current')[1].innerHTML;
+    		Spectrum.load(`/assets/dataset/TW_TPE/${key}.wav`);
+    		let currentTime = parseInt( results[key] );
+			(currentTime < 0) && (currentTime = 0);
+
+			let currentProgress = currentTime / Spectrum.getDuration();
+			Spectrum.seekTo(currentProgress);
+		}
+	</script>
 </html>   

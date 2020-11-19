@@ -1,4 +1,4 @@
-var Spectrum = WaveSurfer.create({
+const Spectrum = WaveSurfer.create({
     container: '#waveform',
     backgroundColor: '#091230',
     waveColor: '#63b3e4',

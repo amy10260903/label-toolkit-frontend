@@ -1,9 +1,12 @@
+const path = require('path');
 const express = require('express');
 const app = express();
-const path = require('path');
 const router = express.Router();
 
-const PORT = 8080;
+const dotenv = require('dotenv');
+dotenv.config();
+
+const PORT = process.env.PORT || 8080;
 
 // View engine setup
 app.set('views', path.join(__dirname,'/views'));
@@ -17,7 +20,7 @@ router.get('/',function(req,res){
 });
 
 router.get('/demo',function(req,res){
-  res.render('demo');
+  res.render('demo', { APP_API_BASE_URL: process.env.APP_API_BASE_URL});
 });
 
 
