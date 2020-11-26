@@ -5,8 +5,8 @@
 		<!--<link rel="icon" href="assets/images/favicon/toolkit.ico"/>-->
 		 <link rel="shortcut icon" href="assets/images/icon/toolkit-01.png" type="image/x-icon" />
 
-		<script src="https://ajax.googleapis.com/ajaxpluginss/jquery/2.1.3/jquery.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajaxpluginss/axios/0.19.2/axios.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.0/axios.min.js"></script>
 
 		<!-- Wave Surfer -->
 		<script src="https://unpkg.com/wavesurfer.js"></script>
@@ -33,7 +33,7 @@
 
 		<!-- Style -->
 		<link rel="stylesheet" href="styles/main.css" />
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajaxpluginss/font-awesome/4.7.0/css/font-awesome.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 	</head>
 	<body>
 		<section id="section-title">
@@ -60,7 +60,7 @@
 				    	</div>
 				    	<div style="width: auto; float:right;">
 					    	<div class="custom-input" id="custom-submit">
-						        <input type="button" onclick="startAnalysis()" id="submit"/>
+						        <input type="button" id="submit"/>
 								<label for="submit">Start</label>
 							</div>
 						</div>
@@ -68,7 +68,7 @@
 			    	<div style="margin-left: 20px; width: 30%; float:left; display: none;" id="candidate">
 						<div class="label">Candidate</div>
 				        <div class="custom-select">
-				        	<select id="select-soundsource" onchange="updateSpectrum()">
+				        	<select id="select-soundsource">
 				        		<option value="" disabled selected>Result</option>
 				        	</select>
 				        </div>
@@ -91,69 +91,21 @@
 		    </div>
 		</section>
 		<section id="section-loader">
-			<div class="container">
-				<div class="loader-inner line-scale-pulse-out"></div>  
-				<p class="loading">Analysing</p>
-			</div>
+			<div class="container" id="loader">
+        		<div class="loader-inner line-scale-pulse-out"></div>
+        		<p class="loading">Analysing</p>
+    		</div>
 		</section>
     </body>
     <script src="js/demo/spectrum.js"></script>
-    <script src="js/demo/event.js"></script>
-	<script src="api/fingerprint.js"></script>
-	<script type="text/javascript">
-		const results = {};
-
-		$('.loader-inner').loaders();
-    	$('#upload-btn').change(function() {
-			$('#upload-label')[0].textContent = this.files[0].name;
+	<script type="module">
+		import { startAnalysis, updateSpectrum } from '/js/demo.js';
+		$('#submit').click( function() {
+			startAnalysis();
 		});
 
-    	const Loader = {};
-    	Loader.show = function () {
-    		$('#section-loader')[0].style.display = 'block';
-		}
-		Loader.hide = function() {
-    		$('#section-loader')[0].style.display = 'none';
-			$('#selection-form')[0].style.display = 'none';
-			$('#candidate')[0].style.display = 'block';
-		}
-
-		function startAnalysis() {
-			console.log('startAnalysis');
-			const data = {
-				category: $(".current")[0].innerHTML,
-				file: $("#upload-btn").prop('files')[0],
-			};
-			Loader.show();
-			uploadFile(data)
-				.then(function (response) {
-    				console.log(response);
-    				Loader.hide();
-    				getDetail(response.data.results);
-    				updateSpectrum();
-    			})
-    			.catch(function (response) {
-    				console.log(response);
-    			});
-		}
-
-		function getDetail(data) {
-			data.forEach((object) => {
-				let option = document.createElement("option");
-				option.text = object.song_name;
-				$('#select-soundsource').append(option);
-				results[object.song_name] = object.offset_seconds;
-			})
-    		$('select').niceSelect('update');
-		}
-
-		function updateSpectrum() {const key = $('.current')[1].innerHTML;
-    		Spectrum.load(`/assets/dataset/TW_TPE/${key}.wav`);
-    		let currentTime = parseInt( results[key] );
-			(currentTime < 0) && (currentTime = 0);
-
-			let currentProgress = currentTime / Spectrum.getDuration();
-			Spectrum.seekTo(currentProgress);
-		}
+		$('#select-soundsource').change( function() {
+			updateSpectrum();
+		});
 	</script>
 </html>   

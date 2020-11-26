@@ -21,3 +21,5 @@ const uploadFile = (data) => {
         }
     })
 }
+
+export { uploadFile };

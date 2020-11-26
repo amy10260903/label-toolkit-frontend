@@ -23,7 +23,6 @@ router.get('/demo',function(req,res){
   res.render('demo', { APP_API_BASE_URL: process.env.APP_API_BASE_URL});
 });
 
-
 app.use(express.static(__dirname), router);
 app.listen(PORT, function() {
 	console.log('Label Toolkit listening on port ' + PORT);

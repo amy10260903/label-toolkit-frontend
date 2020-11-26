@@ -19,4 +19,4 @@ const Spectrum = WaveSurfer.create({
     //     })
     // ]
 });
-Spectrum.load('/assets/dataset/TW_TPE/TW_TPE_005.wav');
+// Spectrum.load('/assets/dataset/TW_TPE/TW_TPE_005.wav');
