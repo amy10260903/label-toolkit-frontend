@@ -14,6 +14,7 @@ app.set("view options", {layout: false});
 app.set('view engine', 'html');
 app.engine('html', require('ejs').renderFile);
 
+
 // Router setup
 router.get('/',function(req,res){
   res.render('index');
@@ -24,6 +25,7 @@ router.get('/demo',function(req,res){
 });
 
 app.use(express.static(__dirname), router);
+app.use('/plugins', express.static(__dirname + '/node_modules/'));
 app.listen(PORT, function() {
 	console.log('Label Toolkit listening on port ' + PORT);
 });

@@ -23,9 +23,12 @@
   "author": "Cosine Chen",
   "license": "ISC",
   "dependencies": {
+    "css-element-queries": "^1.2.3",
     "dotenv": "^8.2.0",
     "ejs": "^3.1.5",
     "express": "^4.17.1",
+    "jquery-nice-select": "^1.1.0",
+    "js-yaml": "^3.14.0",
     "loaders.css": "^0.1.2"
   }
 }

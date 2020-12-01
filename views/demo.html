@@ -8,32 +8,30 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.0/axios.min.js"></script>
 
+		<!-- Style -->
+		<link rel="stylesheet" href="css/style.css" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
 		<!-- Wave Surfer -->
 		<script src="https://unpkg.com/wavesurfer.js"></script>
 		<script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.spectrogram.min.js"></script>
+		<script src="js/spectrum.js"></script>
 
-		<!-- Load YAML -->
-		<script src="plugins/js-yaml/js-yaml.min.js"></script>
-		
 		<!-- Resize Sensor -->
-		<script src="plugins/css-element-queries/ResizeSensor.js"></script>
-		<script src="plugins/css-element-queries/ElementQueries.js"></script>
-		
+		<script src="plugins/css-element-queries/src/ResizeSensor.js"></script>
+		<script src="plugins/css-element-queries/src/ElementQueries.js"></script>
+
 		<!-- Custom Selectbox -->
-		<script src="plugins/jquery-nice-select-1.1.0/jquery.js"></script>
-		<script src="plugins/jquery-nice-select-1.1.0/jquery.nice-select.js"></script>
-		<link rel="stylesheet" href="plugins/jquery-nice-select-1.1.0/nice-select.css">
+		<script src="plugins/jquery-nice-select/js/jquery.js"></script>
+		<script src="plugins/jquery-nice-select/js/jquery.nice-select.js"></script>
+		<link rel="stylesheet" href="plugins/jquery-nice-select/css/nice-select.css">
 
 		<!-- Loader.css -->
 		<script src="plugins/loaders.css/loaders.css.js"></script>
 		<link rel="stylesheet" href="plugins/loaders.css/loaders.min.css">
 
 		<!-- Slider -->
-		<script src="plugins/slider.js"></script>
-
-		<!-- Style -->
-		<link rel="stylesheet" href="../css/style.css" />
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+		<script src="js/slider.js"></script>
 	</head>
 	<body>
 		<section id="section-title">
@@ -97,7 +95,6 @@
     		</div>
 		</section>
     </body>
-    <script src="js/spectrum.js"></script>
 	<script type="module">
 		import { startAnalysis, updateSpectrum } from '/js/demo.js';
 		$('#submit').click( function() {
