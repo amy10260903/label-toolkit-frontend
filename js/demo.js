@@ -1,6 +1,7 @@
 import { uploadFile } from '/api/fingerprint.js';
 import { getOptions } from '/api/option.js';
-import { dragElement } from '/js/drag.js';
+import { dragElement, resizeElement } from '/js/element.js';
+import { pxTOvw, posTotime } from '/js/converter.js';
 
 const results = {};
 
@@ -121,6 +122,7 @@ function getDetail(data) {
         $('.wrapper').append(content);
 
         results[object.song_name] = {
+            'duration': 0,
             'timestamp': object.timestamp_in_seconds,
             'is_plot': false,
         };
@@ -171,6 +173,7 @@ function addSegments(key){
     })
     if (!results[key].is_plot) {
         const duration = Spectrum.getDuration();
+        results[key].duration = duration;
         results[key].timestamp.forEach((obj,idx) => {
             if (obj.onset < duration) {
                 let segment = document.createElement("div");
@@ -187,10 +190,24 @@ function addSegments(key){
 
                 segment.addEventListener('click', function() {
                    // console.log('click');
+                   //  let id = this.id.split("-")[1];
+                   //  let xlim = [0, 0];
                     let currentProgress = obj.onset/duration;
                     Spectrum.seekTo(currentProgress);
-                    this.classList.toggle("item-focus");
-                    dragElement(this);
+
+                    $('.item').each( function(idx) {
+                        // console.log(id, idx);
+                        this.classList.remove("item-focus");
+                    });
+                    this.classList.add("item-focus");
+                    dragElement(this, key);
+                    resizeElement(this, key);
+                });
+
+                new ResizeSensor(segment, function() {
+                    let onset = posTotime(segment.style.left, duration),
+                        width = posTotime(segment.style.width, duration, 'px');
+                    results[key].timestamp[idx].offset = onset + width;
                 });
             }
         });
@@ -201,4 +218,5 @@ function addSegments(key){
 export {
     startAnalysis,
     updateSpectrum,
+    results,
 };

@@ -165,12 +165,22 @@ input[type="range"]::-webkit-slider-thumb:active{
 #section-waveform > .wrapper > .content-segment > .item-focus {
   box-sizing: border-box;
   border: 2px solid rgba(255,255,255,.6);
-  resize: horizontal;
+  /*resize: horizontal;*/
   overflow: auto;
+}
+#section-waveform > .wrapper > .content-segment > .item-focus .resizer-right {
+  width: 5px;
+  height: 100%;
+  background: transparent;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  cursor: e-resize;
 }
 #section-waveform > .wrapper > .content-segment {
   display: none;
   position: absolute;
+  max-width: 80%;
   top:0;
   left:10%;
   width: auto;

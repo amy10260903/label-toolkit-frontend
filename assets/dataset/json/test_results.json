@@ -15,7 +15,7 @@
             "offset": 408,
             "offset_seconds": 18.94748,
             "timestamp": [{"onset": 86, "offset": 604}, {"onset": 2849, "offset": 3340}, {"onset": 1214, "offset": 1722}], 
-            "timestamp_in_seconds": [{"onset": 3.99, "offset": 28.05}, {"onset": 132.31, "offset": 155.11}, {"onset": 56.38, "offset": 79.97}],
+            "timestamp_in_seconds": [{"onset": 3.99, "offset": 28.05}, {"onset": 56.38, "offset": 79.97}, {"onset": 132.31, "offset": 155.11}],
             "file_sha1": "DD6EA2A3C15CCA71552F7508A0973C6C9AE9487C"
         },
         {
