@@ -1,5 +1,6 @@
 import { uploadFile } from '/api/fingerprint.js';
 import { getOptions } from '/api/option.js';
+import { dragElement } from '/js/drag.js';
 
 const results = {};
 
@@ -85,16 +86,22 @@ function startAnalysis() {
         file: $("#upload-btn").prop('files')[0],
     };
     Loader.show();
-    uploadFile(data)
-        .then(function (response) {
-            console.log(response);
-            Loader.hide();
-            getDetail(response.data.results);
-            updateSpectrum();
-        })
-        .catch(function (response) {
-            console.log(response);
-        });
+    Loader.hide();
+    $.getJSON('/assets/dataset/json/test_results.json', function( json ) {
+        // console.log(json);
+        getDetail(json.results);
+        updateSpectrum();
+    });
+    // uploadFile(data)
+    //     .then(function (response) {
+    //         console.log(response);
+    //         Loader.hide();
+    //         getDetail(response.data.results);
+    //         updateSpectrum();
+    //     })
+    //     .catch(function (response) {
+    //         console.log(response);
+    //     });
 }
 
 /**
@@ -102,13 +109,42 @@ function startAnalysis() {
  */
 function getDetail(data) {
     data.forEach((object) => {
+        // selection menu
         let option = document.createElement("option");
         option.text = object.song_name;
         $('#select-soundsource').append(option);
-        results[object.song_name] = object.offset_seconds;
-    })
+
+        // block for each segment
+        let content = document.createElement("div");
+        content.setAttribute("class", "content-segment");
+        content.setAttribute("id", `content-segment-${object.song_name}`);
+        $('.wrapper').append(content);
+
+        results[object.song_name] = {
+            'timestamp': object.timestamp_in_seconds,
+            'is_plot': false,
+        };
+    });
     $('select').niceSelect('update');
 }
+
+// function test(key) {
+//     let content = document.createElement("div");
+//     content.setAttribute("class", "content-segment");
+//     content.setAttribute("id", `content-segment-${key}`);
+//     $('.wrapper').append(content);
+//
+//     let duration = 177.5;
+//     results[key].timestamp.forEach((obj, idx) => {
+//         let segment = document.createElement("div");
+//         segment.setAttribute("class", "item");
+//         segment.setAttribute("id", `segment-${idx}`);
+//         segment.style.display = 'block';
+//         segment.style.left = (obj.onset/duration)*80 + 'vw';
+//         segment.style.width = ((obj.offset-obj.onset)/duration)*80 + 'vw';
+//         content.append(segment);
+//     });
+// }
 
 /**
  * UPDATE show corresponded spectrum of selected audio track
@@ -116,11 +152,50 @@ function getDetail(data) {
 function updateSpectrum() {
     const key = $('.current')[1].innerHTML;
     Spectrum.load(`/assets/dataset/TW_TPE/${key}.wav`);
-    let currentTime = parseInt( results[key] );
-    (currentTime < 0) && (currentTime = 0);
+    Spectrum.on('ready', function() {
+        addSegments($('.current')[1].innerHTML);
+    });
+}
 
-    let currentProgress = currentTime / Spectrum.getDuration();
-    Spectrum.seekTo(currentProgress);
+/**
+ * ADD candidate segments for selected audio track
+ */
+function addSegments(key){
+    console.log('addSegment')
+    $('.content-segment').each(function() {
+        if (this.id == `content-segment-${key}`) {
+            this.style.display = "block";
+        } else {
+            this.style.display = "none";
+        }
+    })
+    if (!results[key].is_plot) {
+        const duration = Spectrum.getDuration();
+        results[key].timestamp.forEach((obj,idx) => {
+            if (obj.onset < duration) {
+                let segment = document.createElement("div");
+                segment.setAttribute("class", "item");
+                segment.setAttribute("id", `segment-${idx}`);
+                segment.style.display = 'block';
+                segment.style.left = (obj.onset/duration)*80 + 'vw';
+                if (obj.offset > duration) {
+                    segment.style.width = ((duration-obj.onset)/duration)*80 + 'vw';
+                } else {
+                    segment.style.width = ((obj.offset-obj.onset)/duration)*80 + 'vw';
+                }
+                $(`#content-segment-${key}`).append(segment);
+
+                segment.addEventListener('click', function() {
+                   // console.log('click');
+                    let currentProgress = obj.onset/duration;
+                    Spectrum.seekTo(currentProgress);
+                    this.classList.toggle("item-focus");
+                    dragElement(this);
+                });
+            }
+        });
+        results[key].is_plot = true;
+    }
 }
 
 export {
