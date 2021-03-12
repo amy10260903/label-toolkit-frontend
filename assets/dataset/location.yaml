@@ -1,0 +1,45 @@
+location:
+- id: TW-HC
+  country: Taiwan
+  city: Hsinchu
+- id: TW-TPE
+  country: Taiwan
+  city: Taipei
+- id: JP-OSK
+  country: Japan
+  city: Osaka
+- id: JP-TK
+  country: Japan
+  city: Tokyo
+
+place:
+- Train Station (Subway)
+- Train Station (Railway)
+- Train Station (High Speed Rail)
+- Supermarket
+- Sidewalk
+- Shopping Mall
+- Restaurant
+- Open-air market
+- On train
+- On bus
+- Night market
+- In car
+- Hypermarket
+- Hospital
+- Eatery
+- Department Store
+- Chemist
+- Cafeteria
+- Amusement park
+
+soundsource:
+- Acoustic environment
+- Brief tone
+- Channel, environment and background
+- Human group actions
+- Human sounds
+- Human voice
+- Onomatopoeia
+- Sound reproduction
+- Surface contact
