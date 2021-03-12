@@ -168,6 +168,10 @@ input[type="range"]::-webkit-slider-thumb:active{
   /*resize: horizontal;*/
   overflow: auto;
 }
+#section-waveform > .wrapper > .content-segment > .item-focus > .item-drag {
+  width: 100%;
+  height: 100%;
+}
 #section-waveform > .wrapper > .content-segment > .item-focus .resizer-right {
   width: 5px;
   height: 100%;

@@ -31,28 +31,45 @@ $('#upload-btn').change(function() {
     $('#upload-label')[0].textContent = this.files[0].name;
 });
 
-$('#btn-play').click(function() {
-   Spectrum.play();
+/**
+ * EVENTS
+ */
+const Audio = {};
+let tgl = true;
+Audio.play = function() {
+    Spectrum.play();
 
-   $('#btn-stop')[0].disabled = false;
-   $('#btn-pause')[0].disabled = false;
-   $('#btn-play')[0].disabled = true;
-});
+    $('#btn-stop')[0].disabled = false;
+    $('#btn-pause')[0].disabled = false;
+    $('#btn-play')[0].disabled = true;
+}
+Audio.pause = function() {
+    Spectrum.pause();
 
-$('#btn-pause').click(function() {
-   Spectrum.pause();
+    $('#btn-pause')[0].disabled = true;
+    $('#btn-play')[0].disabled = false;
+}
+Audio.stop = function() {
+    Spectrum.stop();
 
-   $('#btn-pause')[0].disabled = true;
-   $('#btn-play')[0].disabled = false;
-});
+    $('#btn-stop')[0].disabled = true;
+    $('#btn-pause')[0].disabled = true;
+    $('#btn-play')[0].disabled = false;
+}
+Audio.toggle = function() {
+    tgl?$('#btn-play').click():$('#btn-pause').click();
+    tgl=!tgl;
+}
 
-$('#btn-stop').click(function() {
-   Spectrum.stop();
-
-   $('#btn-stop')[0].disabled = true;
-   $('#btn-pause')[0].disabled = true;
-   $('#btn-play')[0].disabled = false;
-});
+$('#btn-play').click(Audio.play);
+$('#btn-pause').click(Audio.pause);
+$('#btn-stop').click(Audio.stop);
+$(window).keypress(function (e) {
+  if (e.keyCode == 0 || e.keyCode == 32) {
+    e.preventDefault();
+    Audio.toggle();
+  }
+})
 
 $('#slider').change(function() {
     Spectrum.zoom(Number(this.value));
@@ -163,7 +180,7 @@ function updateSpectrum() {
  * ADD candidate segments for selected audio track
  */
 function addSegments(key){
-    console.log('addSegment')
+    // console.log('addSegment');
     $('.content-segment').each(function() {
         if (this.id == `content-segment-${key}`) {
             this.style.display = "block";
@@ -176,7 +193,8 @@ function addSegments(key){
         results[key].duration = duration;
         results[key].timestamp.forEach((obj,idx) => {
             if (obj.onset < duration) {
-                let segment = document.createElement("div");
+                let segment = document.createElement("div"),
+                    segment_drag = document.createElement("div");
                 segment.setAttribute("class", "item");
                 segment.setAttribute("id", `segment-${idx}`);
                 segment.style.display = 'block';
@@ -186,12 +204,11 @@ function addSegments(key){
                 } else {
                     segment.style.width = ((obj.offset-obj.onset)/duration)*80 + 'vw';
                 }
+                segment_drag.setAttribute("class", "item-drag");
+                segment.appendChild(segment_drag);
                 $(`#content-segment-${key}`).append(segment);
 
                 segment.addEventListener('click', function() {
-                   // console.log('click');
-                   //  let id = this.id.split("-")[1];
-                   //  let xlim = [0, 0];
                     let currentProgress = obj.onset/duration;
                     Spectrum.seekTo(currentProgress);
 
@@ -204,11 +221,11 @@ function addSegments(key){
                     resizeElement(this, key);
                 });
 
-                new ResizeSensor(segment, function() {
-                    let onset = posTotime(segment.style.left, duration),
-                        width = posTotime(segment.style.width, duration, 'px');
-                    results[key].timestamp[idx].offset = onset + width;
-                });
+                // new ResizeSensor(segment, function() {
+                //     let onset = posTotime(segment.style.left, duration),
+                //         width = posTotime(segment.style.width, duration, 'px');
+                //     results[key].timestamp[idx].offset = onset + width;
+                // });
             }
         });
         results[key].is_plot = true;

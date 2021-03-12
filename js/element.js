@@ -4,7 +4,7 @@ import { results } from '/js/demo.js';
 function dragElement(elmnt, key) {
     let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
     let xlim = [0, $('#waveform').width()];
-    elmnt.onmousedown = dragMouseDown;
+    elmnt.children[0].onmousedown = dragMouseDown;
 
     function dragMouseDown(e) {
         e = e || window.event;
@@ -51,7 +51,6 @@ function dragElement(elmnt, key) {
 }
 
 function resizeElement(elmnt, key) {
-    let posX;
     let startX, startY, startWidth, startHeight;
     let right = document.createElement("div");
     right.className = "resizer-right";
@@ -59,7 +58,6 @@ function resizeElement(elmnt, key) {
     right.onmousedown = initDrag;
 
     function initDrag(e) {
-        posX = parseFloat(elmnt.style.left);
         startX = e.clientX;
         startY = e.clientY;
         startWidth = parseFloat(elmnt.style.width);
@@ -75,7 +73,6 @@ function resizeElement(elmnt, key) {
         },
         'horizontal': function (e) {
             elmnt.style.width = startWidth + pxTOvw(e.clientX - startX)+ "vw";
-            elmnt.style.left = posX + "vw";
             updateElementPosition(elmnt, key);
         }
     }
