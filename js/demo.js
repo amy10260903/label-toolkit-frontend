@@ -1,7 +1,7 @@
 import { uploadFile } from '/api/fingerprint.js';
 import { getOptions } from '/api/option.js';
-import { dragElement, resizeElement } from '/js/element.js';
-import { pxTOvw, posTotime } from '/js/converter.js';
+import { dragElement, resizeElement } from '/js/interact.js';
+import { exportCSVFile } from '/js/export.js';
 
 const results = {};
 
@@ -71,6 +71,17 @@ $(window).keypress(function (e) {
   }
 })
 
+$('#btn-export').click(function(){
+    let filename = $('.current')[1].innerHTML;
+    if (filename == 'Result') {
+        alert('Please select a file!');
+        return;
+    }
+    let label = $('#text-label').val();
+    let headers = ['id', 'start', 'end', 'label'];
+    exportCSVFile(headers, results[filename].timestamp, label, filename);
+});
+
 $('#slider').change(function() {
     Spectrum.zoom(Number(this.value));
 });
@@ -92,6 +103,8 @@ Loader.hide = function() {
     $('#section-loader')[0].style.display = 'none';
     $('#selection-form')[0].style.display = 'none';
     $('#candidate')[0].style.display = 'block';
+    $('#label')[0].style.display = 'block';
+    $('#export')[0].style.display = 'block';
 }
 
 /**
@@ -107,6 +120,7 @@ function startAnalysis() {
     Loader.hide();
     $.getJSON('/assets/dataset/json/test_results.json', function( json ) {
         // console.log(json);
+        getLabel();
         getDetail(json.results);
         updateSpectrum();
     });
@@ -114,6 +128,7 @@ function startAnalysis() {
     //     .then(function (response) {
     //         console.log(response);
     //         Loader.hide();
+    //         getLabel();
     //         getDetail(response.data.results);
     //         updateSpectrum();
     //     })
@@ -125,6 +140,10 @@ function startAnalysis() {
 /**
  * UPDATE list and show the results
  */
+function getLabel() {
+    let label = $("#upload-btn").val().split(/^.*[\\\/]/).pop().split('.').shift() || 'sound-event-name';
+    $('#text-label').attr('value', label);
+}
 function getDetail(data) {
     data.forEach((object) => {
         // selection menu
@@ -146,24 +165,6 @@ function getDetail(data) {
     });
     $('select').niceSelect('update');
 }
-
-// function test(key) {
-//     let content = document.createElement("div");
-//     content.setAttribute("class", "content-segment");
-//     content.setAttribute("id", `content-segment-${key}`);
-//     $('.wrapper').append(content);
-//
-//     let duration = 177.5;
-//     results[key].timestamp.forEach((obj, idx) => {
-//         let segment = document.createElement("div");
-//         segment.setAttribute("class", "item");
-//         segment.setAttribute("id", `segment-${idx}`);
-//         segment.style.display = 'block';
-//         segment.style.left = (obj.onset/duration)*80 + 'vw';
-//         segment.style.width = ((obj.offset-obj.onset)/duration)*80 + 'vw';
-//         content.append(segment);
-//     });
-// }
 
 /**
  * UPDATE show corresponded spectrum of selected audio track
@@ -220,12 +221,6 @@ function addSegments(key){
                     dragElement(this, key);
                     resizeElement(this, key);
                 });
-
-                // new ResizeSensor(segment, function() {
-                //     let onset = posTotime(segment.style.left, duration),
-                //         width = posTotime(segment.style.width, duration, 'px');
-                //     results[key].timestamp[idx].offset = onset + width;
-                // });
             }
         });
         results[key].is_plot = true;

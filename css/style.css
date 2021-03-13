@@ -55,6 +55,19 @@ input[type="range"]::-webkit-slider-thumb:active{
   height:16px;
 }
 
+input[type="text"]{
+  background-color: #fff;
+  color: black;
+  padding: 0.8rem;
+  font-size: 14px;
+  border-radius: 5px;
+  border: none;
+}
+input[type="text"]:focus {
+  outline: none !important;
+  box-shadow:inset skyblue 0 0 3px 2px;
+}
+
 /* Title */
 #section-title {
   padding: 20px 0 40px 0;
@@ -219,10 +232,10 @@ input[type="range"]::-webkit-slider-thumb:active{
   float:left;
 }
 
-#custom-upload input {
+.custom-input.upload input {
   display: none; 
 }
-#custom-upload > label{
+.custom-input.upload > label{
   display: inline-block;
   background-color: #fff;
   color: black;
@@ -232,10 +245,23 @@ input[type="range"]::-webkit-slider-thumb:active{
   cursor: pointer;
 }
 
-#custom-submit input {
+.custom-input.upload input {
+  display: none;
+}
+.custom-input.upload > label{
+  display: inline-block;
+  background-color: #fff;
+  color: black;
+  padding: 0.8rem;
+  font-size: 14px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.custom-input.submit input {
   display: none; 
 }
-#custom-submit > label{
+.custom-input.submit > label{
   display: inline-block;
   background-color: #fff;
   color: black;
@@ -244,10 +270,9 @@ input[type="range"]::-webkit-slider-thumb:active{
   border-radius: 20px;
   cursor: pointer;
 }
-#custom-submit > label:hover{
+.custom-input.submit > label:hover{
   background-color: lightblue;
 }
-
 
 /* Customized Selection Box */
 

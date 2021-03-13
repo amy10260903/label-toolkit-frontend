@@ -50,15 +50,15 @@
 				    	</div>
 				        <div style="margin-left: 20px; width: 30%; float:left;">
 					        <div class="label">Search</div>
-					        <div class="custom-input" id="custom-upload">
+					        <div class="custom-input upload">
 					        	<input type="file" id="upload-btn" accept="audio/*" />
 								<label for="upload-btn" id="upload-label">Choose file</label>
 							</div>
 				    	</div>
 				    	<div style="width: auto; float:right;">
-					    	<div class="custom-input" id="custom-submit">
-						        <input type="button" id="submit"/>
-								<label for="submit">Start</label>
+					    	<div class="custom-input submit">
+						        <input type="button" id="btn-submit"/>
+								<label for="btn-submit">Start</label>
 							</div>
 						</div>
 			    	</form>
@@ -70,6 +70,18 @@
 				        	</select>
 				        </div>
 			    	</div>
+					<div style="margin-left: 20px; width: 30%; float:left; display: none;" id="label">
+						<div class="label">Label</div>
+				        <div class="custom-input text">
+							<input type="text" id="text-label" placeholder="Sound Event Name"/>
+				        </div>
+			    	</div>
+					<div style="width: auto; float:right; display: none;" id="export">
+						<div class="custom-input submit">
+							<input type="button" id="btn-export"/>
+							<label for="btn-export">Export</label>
+						</div>
+					</div>
 		    	</div>
 		    </div>
 		</section>
@@ -97,7 +109,7 @@
 	<script src="js/spectrum.js"></script>
 	<script type="module">
 		import { startAnalysis, updateSpectrum } from '/js/demo.js';
-		$('#submit').click( function() {
+		$('#btn-submit').click( function() {
 			startAnalysis();
 		});
 
