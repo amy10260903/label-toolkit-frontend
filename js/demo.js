@@ -4,6 +4,9 @@ import { dragElement, resizeElement } from '/js/interact.js';
 import { exportCSVFile } from '/js/export.js';
 
 const results = {};
+const dirname = 'mrt_music_20210506';
+// const dirname = 'TW_TPE';
+let ext = '.wav';
 
 /**
  * GET options for select-list
@@ -115,21 +118,24 @@ function startAnalysis() {
     const data = {
         category: $(".current")[0].innerHTML,
         file: $("#upload-btn").prop('files')[0],
+        filename: $("#upload-btn").val().split(/^.*[\\\/]/).pop().split('.').shift() || 'default',
     };
     Loader.show();
     Loader.hide();
-    $.getJSON('/assets/dataset/json/test_results.json', function( json ) {
+    $.getJSON('/assets/dataset/json/results.json', function( json ) {
         // console.log(json);
+        ext = json.extension;
         getLabel();
-        getDetail(json.results);
+        getDetail(json.matched_result);
         updateSpectrum();
     });
     // uploadFile(data)
     //     .then(function (response) {
-    //         console.log(response);
+    //         let results = JSON.parse(response.data)
+    //         console.log(results);
     //         Loader.hide();
     //         getLabel();
-    //         getDetail(response.data.results);
+    //         getDetail(results.matched_result);
     //         updateSpectrum();
     //     })
     //     .catch(function (response) {
@@ -148,16 +154,16 @@ function getDetail(data) {
     data.forEach((object) => {
         // selection menu
         let option = document.createElement("option");
-        option.text = object.song_name;
+        option.text = object.recording_name;
         $('#select-soundsource').append(option);
 
         // block for each segment
         let content = document.createElement("div");
         content.setAttribute("class", "content-segment");
-        content.setAttribute("id", `content-segment-${object.song_name}`);
+        content.setAttribute("id", `content-segment-${object.recording_name}`);
         $('.wrapper').append(content);
 
-        results[object.song_name] = {
+        results[object.recording_name] = {
             'duration': 0,
             'timestamp': object.timestamp_in_seconds,
             'is_plot': false,
@@ -171,7 +177,7 @@ function getDetail(data) {
  */
 function updateSpectrum() {
     const key = $('.current')[1].innerHTML;
-    Spectrum.load(`/assets/dataset/TW_TPE/${key}.wav`);
+    Spectrum.load(`/assets/dataset/${dirname}/${key}${ext}`);
     Spectrum.on('ready', function() {
         addSegments($('.current')[1].innerHTML);
     });
@@ -193,24 +199,24 @@ function addSegments(key){
         const duration = Spectrum.getDuration();
         results[key].duration = duration;
         results[key].timestamp.forEach((obj,idx) => {
-            if (obj.onset < duration) {
+            if (obj[0] < duration) {
                 let segment = document.createElement("div"),
                     segment_drag = document.createElement("div");
                 segment.setAttribute("class", "item");
                 segment.setAttribute("id", `segment-${idx}`);
                 segment.style.display = 'block';
-                segment.style.left = (obj.onset/duration)*80 + 'vw';
-                if (obj.offset > duration) {
-                    segment.style.width = ((duration-obj.onset)/duration)*80 + 'vw';
+                segment.style.left = (obj[0]/duration)*80 + 'vw';
+                if (obj[1] > duration) {
+                    segment.style.width = ((duration-obj[0])/duration)*80 + 'vw';
                 } else {
-                    segment.style.width = ((obj.offset-obj.onset)/duration)*80 + 'vw';
+                    segment.style.width = ((obj[1]-obj[0])/duration)*80 + 'vw';
                 }
                 segment_drag.setAttribute("class", "item-drag");
                 segment.appendChild(segment_drag);
                 $(`#content-segment-${key}`).append(segment);
 
                 segment.addEventListener('click', function() {
-                    let currentProgress = obj.onset/duration;
+                    let currentProgress = obj[0]/duration;
                     Spectrum.seekTo(currentProgress);
 
                     $('.item').each( function(idx) {

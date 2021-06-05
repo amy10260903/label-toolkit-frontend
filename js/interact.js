@@ -87,8 +87,8 @@ function updateElementPosition(elmnt, key) {
     let idx = elmnt.id.split("-")[1];
     let onset = posTotime(elmnt.style.left, results[key].duration),
         width = posTotime(elmnt.style.width, results[key].duration);
-    results[key].timestamp[idx].onset = onset;
-    results[key].timestamp[idx].offset = onset + width;
+    results[key].timestamp[idx].onset = onset.toFixed(2);
+    results[key].timestamp[idx].offset = (onset + width).toFixed(2);
 }
 
 export {
